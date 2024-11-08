@@ -1,4 +1,43 @@
 package kh.edu.cstad.business.config.jpa;
 
-public class Auditable {
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
+import java.time.LocalDateTime;
+
+
+@NoArgsConstructor
+@Getter
+@Setter
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+public abstract class Auditable<T> {
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    protected Boolean isDeleted = false;
+
+    @CreatedBy
+    protected T createdBy;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
+    protected LocalDateTime createdDate;
+
+    @LastModifiedBy
+    protected T lastModifiedBy;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @LastModifiedDate
+    protected LocalDateTime lastModifiedDate;
+
 }

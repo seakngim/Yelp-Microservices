@@ -1,28 +1,45 @@
 package kh.edu.cstad.product.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+import java.math.BigDecimal;
+import java.util.List;
+
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "products")
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    @Column(unique = true, nullable = false)
+    private String skus;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(length = 1000)
+    @Column(nullable = false)
+    private BigDecimal priceOut;
+
+    private Integer quantity;
+
+    private String image;
+
     private String description;
 
-    @Column(nullable = false)
-    private String sku;
+    private Boolean isAvailable;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
-    private Inventory inventory;
+    @OneToMany(mappedBy = "product")
+    private List<Category> categories;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
-    private Pricing pricing;
+    @OneToMany(mappedBy = "product")
+    private List<Inventory> inventories;
+
 }

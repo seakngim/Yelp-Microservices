@@ -1,142 +1,104 @@
 package kh.edu.cstad.business.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
+import jakarta.persistence.*;
+import kh.edu.cstad.business.config.jpa.Auditable;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 
-public class Business {
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "businesses")
+public class Business extends Auditable<String> {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String alias;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @Column(unique = false, nullable = false) // change unique to false, easy to test create business without creating new user
+    private String username;    // username of business owner account
 
-    private String image_url;
-    private  Boolean is_closed;
-    private String url;
-    private Integer review_count;
+    @Column(unique = true, nullable = false, columnDefinition = "TEXT")
+    private String brand;
 
+    @Column(unique = true, columnDefinition = "TEXT")
+    private String customBrand;
+
+    private String logo;
+    private String cover;
+    private String thumbnail;
+
+    @Column(columnDefinition = "TEXT")
+    private String about;
+
+    @Column(unique = true, nullable = false, length = 30)
+    private String phoneNumber;
+
+    @ManyToOne
+    private Country country;
+
+    @ManyToOne
+    private City city;
+
+    @Column(columnDefinition = "TEXT")
+    private String address1;
+
+    @Column(columnDefinition = "TEXT")
+    private String address2;
+
+    @Column(columnDefinition = "TEXT")
+    private String address3;
+
+    private String stateOrProvince;
+
+    @Column(length = 32)
+    private String zipCode;
+
+    private Boolean isOpening24Hours;
+
+    //@Convert(converter = OpeningHourAttributeConverter.class) // old code hibernate older than 6
+    @JdbcTypeCode(SqlTypes.JSON) // new code hibernate greater than or equal 6 (Using Hibernate 6’s standard JSON mapping)
+    private List<OpeningHour> openingHours;
+
+    //@Convert(converter = AdditionalInformationAttributeConverter.class) // // old code hibernate older than 6
+    @JdbcTypeCode(SqlTypes.JSON) // new code hibernate greater than or equal 6 (Using Hibernate 6’s standard JSON mapping)
+    private List<AdditionalInformation> additionalInformation;
+
+    @ManyToMany
+    @JoinTable(name = "businesses_categories",
+            joinColumns = @JoinColumn(name = "business_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id"))
     private List<Category> categories;
-    private String rating;
 
-    public static class Coordinates {
-        @Column (unique = true, nullable = false)
-        private String latitude;
-        @Column (unique = true, nullable = false)
-        private String longitude;
-    }
+    @Column(unique = true, length = 150)
+    private String website;
 
-    private List<Transaction> transactions; // supported values are pickup, delivery and restaurant_reservation.
+    @Column(unique = true, nullable = false, length = 100)
+    private String email;
+
+    private Boolean isClaimed;
+    private Boolean isClosed;
+    private Boolean isApproved;
+    private Boolean isSearchable;
+
+    private Double latitude;
+    private Double longitude;
+    private String googleMap;
 
     private String price;
 
-    public static class Location{
-        private String adress1;
-        private String address2;
-        private String getAdress3;
-        private String city;
-        private String zip_code;
-        private String country;
-        private String state;
-
-        @Column (unique = true, nullable = false)
-        private List<County> display_address;
-
-        private String cross_streets;
-    }
-
-
-    @Column (unique = true, nullable = false)
-    private String phone;
-
-    @Column (unique = true, nullable = false)
-    private String display_phone;
-
-    private String distance;
-
-    @Data
-    public static class Attributes {
-        private boolean likedByVegetarians;
-        private boolean likedByVegans;
-        private boolean hotAndNew;
-    }
-
-
-    @Column (unique = true, nullable = false)
-    private Boolean is_claimed;
-
-    private String date_opened;
-    private String date_closed;
-    private List<String> photo;
-
-    @Data
-    public static class SpecialHours {
-        @Column (unique = true, nullable = false)
-        private String date;
-        private String start;
-        private String end;
-        private Boolean isOvernight;
-        private Boolean isClosed;
-    }
-
-    @Data
-    public static class Messaging {
-
-        @Column (unique = true, nullable = false)
-        private String url;
-
-        @Column (unique = true, nullable = false)
-        private String phone;
-
-        @Column (unique = true, nullable = false)
-        private String display_phone;
-        private String useCaseText;
-        private String responseRate;
-        private Integer responseTime;
-        private Boolean isEnabled;
-    }
-
-    @Data
-    public static class PhotoDetails {
-        private String photoId;
-        private String url;
-        private String caption;
-        private Integer width;
-        private Integer height;
-        private Boolean isUserSubmitted;
-        private String userId;
-        private String label;
-    }
-
-    private String yelp_menu_url;
-    private String cbsa;
-    @Data
-    public static class PopularityScore {
-        private String primaryCategory;
-        private String score;
-    }
-
-    @Data
-    public static class RAPC {
-        private boolean isEnabled;
-        private boolean isEligible;
-    }
-    @Data
-    public static class Hours {
-        @Column (unique = true, nullable = false)
-        private String hourType;
-        @Column (unique = true, nullable = false)
-        private List<OpeningHour> open;
-
-        @Column (unique = true, nullable = false)
-        private Boolean is_open_now;
-    }
+    @ManyToMany
+    @JoinTable(name = "businesses_transactions",
+            joinColumns = @JoinColumn(name = "business_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "transaction_id", referencedColumnName = "id"))
+    private List<Transaction> transactions;
 }

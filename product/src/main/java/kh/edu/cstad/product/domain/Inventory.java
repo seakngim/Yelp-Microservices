@@ -1,23 +1,31 @@
 package kh.edu.cstad.product.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "inventory")
 public class Inventory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @ManyToOne
     private Product product;
 
-    @Column(nullable = false)
     private Integer quantity;
+    private BigDecimal priceIn;
 
-    @Column(name = "reorder_level")
-    private Integer reorderLevel;
+    private LocalDateTime stockInDate;
+
+
 }
