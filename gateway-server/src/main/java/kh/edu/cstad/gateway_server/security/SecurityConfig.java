@@ -31,7 +31,7 @@ public class SecurityConfig {
                                                   @Value("${client-permit-matchers}") String[] permitMatchers,
                                                   ReactiveClientRegistrationRepository repository) {
 
-        // Apply this filter-chain only to resources needing sessions
+         // Apply this filter-chain only to resources needing sessions
         final var clientRoutes = Stream.of(securityMatchers).map(PathPatternParserServerWebExchangeMatcher::new)
                 .map(ServerWebExchangeMatcher.class::cast)
                 .toList();
